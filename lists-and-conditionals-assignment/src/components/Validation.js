@@ -1,12 +1,13 @@
-import React from "react";
+import React from 'react';
 
 function Validation(props) {
-  let validationText = "";
+  let validationText = '';
   if (props.length >= 5) {
-    validationText = "Text long enough";
+    validationText = 'Text long enough';
   } else {
-    validationText = "Text too short";
+    validationText = 'Text too short';
   }
+
   return <div>{validationText}</div>;
 }
 
