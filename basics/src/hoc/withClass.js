@@ -4,7 +4,7 @@ const WithClass = (WrappedComponent, className) => {
   return (props) => {
     return (
       <div className={className}>
-        <WrappedComponent />
+        <WrappedComponent {...props} />
       </div>
     );
   };
