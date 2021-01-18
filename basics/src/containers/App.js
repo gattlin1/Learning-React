@@ -9,6 +9,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     console.log('[App.js] constructor', props);
+
     this.state = {
       persons: [
         { id: 1, name: 'Max', age: 28 },
@@ -19,6 +20,7 @@ class App extends Component {
       showCockpit: true,
       otherState: 'some other state value',
       changedCounter: 0,
+      authenticated: false,
     };
   }
 
@@ -81,6 +83,10 @@ class App extends Component {
     });
   };
 
+  loginHandler = () => {
+    this.setState({ authenticated: true });
+  };
+
   deletePersonHandler = (index) => {
     const newPersons = [...this.state.persons];
     newPersons.splice(index, 1);
@@ -98,6 +104,7 @@ class App extends Component {
           persons={this.state.persons}
           clicked={this.deletePersonHandler}
           changed={this.nameChangeHandler}
+          isAuthenticated={this.state.authenticated}
         />
       );
     }
@@ -111,6 +118,7 @@ class App extends Component {
             showPersons={this.state.showPersons}
             personsLength={this.state.persons.length}
             clicked={this.togglePersonsHandler}
+            login={this.loginHandler}
           />
         ) : null}
         {persons}
