@@ -28,14 +28,14 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAddPerson: () =>
+    onAddPerson: (name, age) =>
       dispatch({
         type: actionTypes.ADD_PERSON,
         payload: {
           person: {
             id: Math.random(), // not really unique but good enough here!
-            name: 'Max',
-            age: Math.floor(Math.random() * 40),
+            name: name,
+            age: age,
           },
         },
       }),
