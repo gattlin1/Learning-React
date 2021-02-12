@@ -5,6 +5,7 @@ import axios from '../../../axios-orders';
 import Button from '../../../components/UI/Button/Button';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Forms/Input/Input';
+import { connect } from 'react-redux';
 
 export class ContactData extends Component {
   state = {
@@ -130,7 +131,6 @@ export class ContactData extends Component {
     if (rules.maxLength) {
       isValid = value.length <= rules.maxLength && isValid;
     }
-    console.log(isValid);
     return isValid;
   }
 
@@ -147,7 +147,6 @@ export class ContactData extends Component {
     for (const element of formElementsArray) {
       validForm = element.config.valid && validForm;
     }
-    console.log(validForm);
 
     let form = this.state.loading ? (
       <Spinner />
@@ -179,4 +178,7 @@ export class ContactData extends Component {
   }
 }
 
-export default ContactData;
+const mapStateToProps = (state) => {
+  return { ingredients: state.ingredients, price: state.totalPrice };
+};
+export default connect(mapStateToProps)(ContactData);
