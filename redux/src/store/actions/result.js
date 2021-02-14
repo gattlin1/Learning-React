@@ -1,8 +1,10 @@
 import * as actionTypes from './actionTypes';
 
 export const storeResult = (value) => {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     setTimeout(() => {
+      const oldCounter = getState().counter.counter;
+      console.log('oldCounter', oldCounter);
       dispatch({
         type: actionTypes.STORE_RESULT,
         value: value,
