@@ -1,4 +1,4 @@
-import * as ActionTypes from '../actions/actions';
+import * as ActionTypes from '../actions/actionTypes';
 const initialState = { results: [] };
 
 const reducer = (state = initialState, action) => {
