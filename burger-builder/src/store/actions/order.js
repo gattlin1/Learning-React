@@ -12,11 +12,11 @@ export const purchaseBurgerFailed = (error) => {
 export const purchaseBurgerStart = () => {
   return { type: actionTypes.PURCHASE_BURGER_START };
 };
-export const purchaseBurger = (data) => {
+export const purchaseBurger = (data, token) => {
   return (dispatch) => {
     dispatch(purchaseBurgerStart());
     axios
-      .post('/orders.json', data)
+      .post('/orders.json?auth=' + token, data)
       .then((response) => {
         dispatch(purchaseBurgerSuccess(response.data.name, data));
       })
@@ -48,11 +48,11 @@ export const fetchOrdersFailed = (error) => {
 export const fetchOrdersStart = () => {
   return { type: actionTypes.FETCH_ORDERS_START };
 };
-export const fetchOrders = () => {
+export const fetchOrders = (token) => {
   return (dispatch) => {
     dispatch(fetchOrdersStart());
     axios
-      .get('/orders.json')
+      .get('/orders.json?auth=' + token)
       .then((response) => {
         const fetchedOrders = [];
         for (const key in response.data) {
