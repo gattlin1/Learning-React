@@ -12,9 +12,11 @@ export const authSuccess = (authData) => {
     userId: authData.localId,
   };
 };
+
 export const authFailed = (error) => {
   return { type: actionTypes.AUTH_FAILED, error: error };
 };
+
 export const logout = () => {
   return { type: actionTypes.AUTH_LOGOUT };
 };
