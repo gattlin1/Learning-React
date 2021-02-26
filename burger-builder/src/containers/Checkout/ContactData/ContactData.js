@@ -94,6 +94,7 @@ export class ContactData extends Component {
       ingredients: this.props.ingredients,
       price: this.props.price,
       orderData: formData,
+      userId: this.props.userId,
     };
     this.props.onSubmitOrder(order, this.props.token);
   };
@@ -175,13 +176,14 @@ const mapStateToProps = (state) => {
     price: state.burgerBuilder.totalPrice,
     loading: state.order.loading,
     token: state.auth.token,
+    userId: state.auth.userId,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSubmitOrder: (data, token) => {
-      dispatch(contactDataActions.purchaseBurger(data, token));
+    onSubmitOrder: (data, userId, token) => {
+      dispatch(contactDataActions.purchaseBurger(data, userId, token));
     },
   };
 };
