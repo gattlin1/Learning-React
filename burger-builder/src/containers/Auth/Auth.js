@@ -5,6 +5,7 @@ import { Redirect } from 'react-router';
 import Button from '../../components/UI/Button/Button';
 import Input from '../../components/UI/Forms/Input/Input';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import { updateObject } from '../../shared/utility';
 import * as actions from '../../store/actions';
 import './Auth.css';
 
@@ -44,18 +45,16 @@ export class Auth extends Component {
   }
 
   inputChangedHandler = (event, inputIdentifier) => {
-    const form = {
-      ...this.state.controls,
-      [inputIdentifier]: {
-        ...this.state.controls[inputIdentifier],
+    const form = updateObject(this.state.controls, {
+      [inputIdentifier]: updateObject(this.state.controls[inputIdentifier], {
         value: event.target.value,
         valid: this.checkValidity(
           event.target.value,
           this.state.controls[inputIdentifier].validation
         ),
         touched: true,
-      },
-    };
+      }),
+    });
     this.setState({ controls: form });
   };
 

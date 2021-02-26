@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import * as contactDataActions from '../../../store/actions/index';
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../../axios-orders';
+import { updateObject } from '../../../shared/utility';
 
 export class ContactData extends Component {
   state = {
@@ -100,14 +101,21 @@ export class ContactData extends Component {
   };
 
   inputChangedHandler = (event, inputIdentifier) => {
-    const form = { ...this.state.orderForm };
-    const updatedFormElement = { ...form[inputIdentifier] };
-    updatedFormElement.value = event.target.value;
-    updatedFormElement.touched = true;
-    updatedFormElement.valid = this.checkValidity(
-      updatedFormElement.value,
-      updatedFormElement.validation
+    const updatedFormElement = updateObject(
+      this.state.orderForm[inputIdentifier],
+      {
+        value: event.target.value,
+        touched: true,
+        valid: this.checkValidity(
+          event.target.value,
+          this.state.orderForm[inputIdentifier].validation
+        ),
+      }
     );
+    const form = updateObject(this.state.orderForm, {
+      [inputIdentifier]: updatedFormElement,
+    });
+
     form[inputIdentifier] = updatedFormElement;
     this.setState({ orderForm: form });
   };
