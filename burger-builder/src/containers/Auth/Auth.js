@@ -60,7 +60,6 @@ export class Auth extends Component {
 
   submitHandler = (event) => {
     event.preventDefault();
-    console.log(this.state.isSignUp);
     this.props.onAuthenticate(
       this.state.controls.email.value,
       this.state.controls.password.value,
