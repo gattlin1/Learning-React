@@ -1,4 +1,4 @@
-import React, { useReducer, useState, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
@@ -14,22 +14,38 @@ function ingredientReducer(currentIngredients, action) {
     case 'DELETE':
       return currentIngredients.filter((ig) => ig.id !== action.id);
     default:
-      throw new Error('Should not get here');
+      throw new Error(`Unhandled type: ${action.type}`);
+  }
+}
+
+function httpReducer(httpState, action) {
+  switch (action.type) {
+    case 'SEND':
+      return { ...httpState, loading: true };
+    case 'RESPONSE':
+      return { ...httpState, loading: false };
+    case 'ERROR':
+      return { error: action.error, loading: false };
+    case 'CLEAR':
+      return { ...httpState, error: null };
+    default:
+      throw new Error(`Unhandled type: ${action.type}`);
   }
 }
 
 function Ingredients() {
-  const [ingredients, dispatch] = useReducer(ingredientReducer);
-  //const [ingredients, setIngredients] = useState([]);
-  const [IsLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
+  const [ingredients, dispatchIngrednients] = useReducer(ingredientReducer, []);
+  const [httpState, dispatchHttp] = useReducer(httpReducer, {
+    loading: false,
+    error: null,
+  });
 
   useEffect(() => {
     console.log('RENDERING INGREDIENTS');
   }, [ingredients]);
 
   const addIngredientHandler = (ingredient) => {
-    setIsLoading(true);
+    dispatchHttp({ type: 'SEND' });
     fetch(
       'https://react-hooks-cd957-default-rtdb.firebaseio.com/ingredients.json',
       {
@@ -42,20 +58,19 @@ function Ingredients() {
         return response.json();
       })
       .then((responseData) => {
-        dispatch({
+        dispatchIngrednients({
           type: 'ADD',
           ingredient: { id: responseData.name, ...ingredient },
         });
-        setIsLoading(false);
+        dispatchHttp({ type: 'RESPONSE' });
       })
       .catch((err) => {
-        setError(err.message);
-        setIsLoading(false);
+        dispatchHttp({ type: 'ERROR', error: err.message });
       });
   };
 
   const removeIngredientHandler = (id) => {
-    setIsLoading(true);
+    dispatchHttp({ type: 'SEND' });
     fetch(
       `https://react-hooks-cd957-default-rtdb.firebaseio.com/ingredients/${id}.json`,
       {
@@ -66,28 +81,30 @@ function Ingredients() {
         return response.json();
       })
       .then((responseData) => {
-        dispatch({ type: 'DELETE', id: id });
-        setIsLoading(false);
+        dispatchIngrednients({ type: 'DELETE', id: id });
+        dispatchHttp({ type: 'RESPONSE' });
       })
-      .catch((error) => {
-        setIsLoading(false);
+      .catch((err) => {
+        dispatchHttp({ type: 'ERROR', error: err.message });
       });
   };
 
   const filteredIngredientsHandler = useCallback((ingredients) => {
-    dispatch({ type: 'SET', ingredients: ingredients });
+    dispatchIngrednients({ type: 'SET', ingredients: ingredients });
   }, []);
 
   const clearErrorHandler = () => {
-    setError(null);
+    dispatchHttp({ type: 'CLEAR' });
   };
 
   return (
     <div className='App'>
-      {error && <ErrorModal onClose={clearErrorHandler}>{error}</ErrorModal>}
+      {httpState.error && (
+        <ErrorModal onClose={clearErrorHandler}>{httpState.error}</ErrorModal>
+      )}
       <IngredientForm
         onAddIngredient={addIngredientHandler}
-        loading={IsLoading}
+        loading={httpState.loading}
       />
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
