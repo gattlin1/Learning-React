@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback, useMemo } from 'react';
 
 import IngredientForm from './IngredientForm';
 import IngredientList from './IngredientList';
@@ -44,7 +44,7 @@ function Ingredients() {
     console.log('RENDERING INGREDIENTS');
   }, [ingredients]);
 
-  const addIngredientHandler = (ingredient) => {
+  const addIngredientHandler = useCallback((ingredient) => {
     dispatchHttp({ type: 'SEND' });
     fetch(
       'https://react-hooks-cd957-default-rtdb.firebaseio.com/ingredients.json',
@@ -67,9 +67,9 @@ function Ingredients() {
       .catch((err) => {
         dispatchHttp({ type: 'ERROR', error: err.message });
       });
-  };
+  }, []);
 
-  const removeIngredientHandler = (id) => {
+  const removeIngredientHandler = useCallback((id) => {
     dispatchHttp({ type: 'SEND' });
     fetch(
       `https://react-hooks-cd957-default-rtdb.firebaseio.com/ingredients/${id}.json`,
@@ -87,15 +87,25 @@ function Ingredients() {
       .catch((err) => {
         dispatchHttp({ type: 'ERROR', error: err.message });
       });
-  };
+  }, []);
 
   const filteredIngredientsHandler = useCallback((ingredients) => {
     dispatchIngrednients({ type: 'SET', ingredients: ingredients });
   }, []);
 
-  const clearErrorHandler = () => {
+  const clearErrorHandler = useCallback(() => {
     dispatchHttp({ type: 'CLEAR' });
-  };
+  }, []);
+
+  const ingredientList = useMemo(
+    () => (
+      <IngredientList
+        ingredients={ingredients}
+        onRemoveItem={removeIngredientHandler}
+      />
+    ),
+    [ingredients, removeIngredientHandler]
+  );
 
   return (
     <div className='App'>
@@ -108,10 +118,7 @@ function Ingredients() {
       />
       <section>
         <Search onLoadIngredients={filteredIngredientsHandler} />
-        <IngredientList
-          ingredients={ingredients}
-          onRemoveItem={removeIngredientHandler}
-        />
+        {ingredientList}
       </section>
     </div>
   );
