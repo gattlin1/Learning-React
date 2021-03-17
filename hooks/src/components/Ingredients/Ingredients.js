@@ -21,43 +21,31 @@ function ingredientReducer(currentIngredients, action) {
 
 function Ingredients() {
   const [ingredients, dispatchIngrednients] = useReducer(ingredientReducer, []);
+  const { isLoading, httpError, httpData, sendRequest, reqExtra } = useHttp();
 
   useEffect(() => {
-    console.log('RENDERING INGREDIENTS');
-  }, [ingredients]);
+    dispatchIngrednients({ type: 'DELETE', id: reqExtra });
+  }, [httpData, reqExtra]);
 
-  const { isLoading, httpError, httpData, sendRequest } = useHttp();
-
-  const addIngredientHandler = useCallback((ingredient) => {
-    dispatchHttp({ type: 'SEND' });
-    fetch(
-      'https://react-hooks-cd957-default-rtdb.firebaseio.com/ingredients.json',
-      {
-        method: 'POST',
-        body: JSON.stringify(ingredient),
-        headers: { 'Content-Type': 'application/json' },
-      }
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseData) => {
-        dispatchIngrednients({
-          type: 'ADD',
-          ingredient: { id: responseData.name, ...ingredient },
-        });
-        dispatchHttp({ type: 'RESPONSE' });
-      })
-      .catch((err) => {
-        dispatchHttp({ type: 'ERROR', error: err.message });
-      });
-  }, []);
+  const addIngredientHandler = useCallback(
+    (ingredient) => {
+      sendRequest(
+        'https://react-hooks-cd957-default-rtdb.firebaseio.com/ingredients.json',
+        'POST',
+        JSON.stringify(ingredient),
+        null
+      );
+    },
+    [sendRequest]
+  );
 
   const removeIngredientHandler = useCallback(
     (id) => {
       sendRequest(
         `https://react-hooks-cd957-default-rtdb.firebaseio.com/ingredients/${id}.json`,
-        'DELETE'
+        'DELETE',
+        null,
+        id
       );
     },
     [sendRequest]
@@ -68,7 +56,7 @@ function Ingredients() {
   }, []);
 
   const clearErrorHandler = useCallback(() => {
-    dispatchHttp({ type: 'CLEAR' });
+    //dispatchHttp({ type: 'CLEAR' });
   }, []);
 
   const ingredientList = useMemo(
