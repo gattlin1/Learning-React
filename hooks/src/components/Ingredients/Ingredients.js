@@ -21,11 +21,27 @@ function ingredientReducer(currentIngredients, action) {
 
 function Ingredients() {
   const [ingredients, dispatchIngrednients] = useReducer(ingredientReducer, []);
-  const { isLoading, httpError, httpData, sendRequest, reqExtra } = useHttp();
+  const {
+    isLoading,
+    httpError,
+    resData,
+    sendRequest,
+    reqExtra,
+    identifier,
+  } = useHttp();
 
   useEffect(() => {
-    dispatchIngrednients({ type: 'DELETE', id: reqExtra });
-  }, [httpData, reqExtra]);
+    if (!httpError) {
+      if (identifier === 'DELETE') {
+        dispatchIngrednients({ type: 'DELETE', id: reqExtra });
+      } else if (resData && identifier === 'POST') {
+        dispatchIngrednients({
+          type: 'ADD',
+          ingredient: { id: resData.name, ...reqExtra },
+        });
+      }
+    }
+  }, [resData, reqExtra, identifier, isLoading, httpError]);
 
   const addIngredientHandler = useCallback(
     (ingredient) => {
@@ -33,7 +49,7 @@ function Ingredients() {
         'https://react-hooks-cd957-default-rtdb.firebaseio.com/ingredients.json',
         'POST',
         JSON.stringify(ingredient),
-        null
+        ingredient
       );
     },
     [sendRequest]
