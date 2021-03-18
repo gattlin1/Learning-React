@@ -23,15 +23,16 @@ function Ingredients() {
   const [ingredients, dispatchIngrednients] = useReducer(ingredientReducer, []);
   const {
     isLoading,
-    httpError,
+    resError,
     resData,
     sendRequest,
     reqExtra,
     identifier,
+    clear,
   } = useHttp();
 
   useEffect(() => {
-    if (!httpError) {
+    if (!resError) {
       if (identifier === 'DELETE') {
         dispatchIngrednients({ type: 'DELETE', id: reqExtra });
       } else if (resData && identifier === 'POST') {
@@ -41,7 +42,7 @@ function Ingredients() {
         });
       }
     }
-  }, [resData, reqExtra, identifier, isLoading, httpError]);
+  }, [resData, reqExtra, identifier, isLoading, resError]);
 
   const addIngredientHandler = useCallback(
     (ingredient) => {
@@ -71,10 +72,6 @@ function Ingredients() {
     dispatchIngrednients({ type: 'SET', ingredients: ingredients });
   }, []);
 
-  const clearErrorHandler = useCallback(() => {
-    //dispatchHttp({ type: 'CLEAR' });
-  }, []);
-
   const ingredientList = useMemo(
     () => (
       <IngredientList
@@ -87,9 +84,7 @@ function Ingredients() {
 
   return (
     <div className='App'>
-      {httpError && (
-        <ErrorModal onClose={clearErrorHandler}>{httpError}</ErrorModal>
-      )}
+      {resError && <ErrorModal onClose={clear}>{resError}</ErrorModal>}
       <IngredientForm
         onAddIngredient={addIngredientHandler}
         loading={isLoading}
