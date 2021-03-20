@@ -32,7 +32,7 @@ function Auth(props) {
     if (!props.isBuildingBurger && props.redirectPath !== '/') {
       props.onChangeRedirectPath('/');
     }
-  }, []);
+  }, [props.isBuildingBurger, props.redirectPath, props.onChangeRedirectPath]);
 
   const inputChangedHandler = (event, inputIdentifier) => {
     const form = updateObject(controls, {

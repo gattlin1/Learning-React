@@ -47,10 +47,11 @@ const initialOrderFormState = {
 
 export function ContactData(props) {
   const [orderForm, setOrderForm] = useState(initialOrderFormState);
+  const [formIsValid, setformIsValid] = useState(true);
 
   const orderHandler = (event) => {
     event.preventDefault();
-    console.log('made it here');
+
     const formData = {};
     for (const formElement in orderForm) {
       formData[formElement] = orderForm[formElement].value;
@@ -62,6 +63,7 @@ export function ContactData(props) {
       orderData: formData,
       userId: props.userId,
     };
+
     props.onSubmitOrder(order, props.token);
   };
 
@@ -79,6 +81,13 @@ export function ContactData(props) {
     });
 
     form[inputIdentifier] = updatedFormElement;
+
+    let validForm = true;
+    for (const element of formElementsArray) {
+      validForm = element.config.valid && validForm;
+    }
+
+    setformIsValid(validForm);
     setOrderForm(form);
   };
 
@@ -88,11 +97,6 @@ export function ContactData(props) {
       id: key,
       config: orderForm[key],
     });
-  }
-
-  let validForm = true;
-  for (const element of formElementsArray) {
-    validForm = element.config.valid && validForm;
   }
 
   let form = props.loading ? (
@@ -111,7 +115,7 @@ export function ContactData(props) {
           changed={(event) => inputChangedHandler(event, element.id)}
         />
       ))}
-      <Button type='Success' disabled={!validForm}>
+      <Button type='Success' disabled={!formIsValid}>
         Order
       </Button>
     </form>
